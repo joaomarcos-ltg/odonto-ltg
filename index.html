@@ -115,6 +115,10 @@
           <i class="fa-solid fa-gear"></i>
           <span>Consultório</span>
         </button>
+        <button onclick="mudarAba('manual')" id="tab-manual" class="nav-btn px-3.5 py-2 rounded-xl text-xs font-bold text-amber-800 bg-amber-100/80 hover:bg-amber-200/80 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Manual de Uso</span>
+        </button>
       </nav>
     </div>
   </header>
@@ -477,6 +481,83 @@
       </div>
     </section>
 
+
+    <!-- ========================================================= -->
+    <!-- ABA 5: MANUAL DE USO PASSO A PASSO (DRA. & SECRETÁRIA)    -->
+    <!-- ========================================================= -->
+    <section id="sec-manual" class="hidden">
+      <div class="max-w-4xl mx-auto space-y-6">
+        <div class="bg-white rounded-2xl p-6 sm:p-8 border border-bordo-200 shadow-sm">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-bordo-600">Guia Prático • Sem Complicação</span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-bordo-800 mt-1">Manual Rápido do OdontoLTG</h2>
+          <p class="text-xs sm:text-sm text-stone-600 mt-2">Bem-vinda, <strong>Dra. Nadia</strong>! Este sistema foi desenhado sob medida para substituir os blocos de papel do consultório com total praticidade para você e sua secretária.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 text-xs">
+            <!-- Passo 1 -->
+            <div class="p-5 rounded-2xl bg-bordo-50/70 border border-bordo-200 space-y-2">
+              <div class="flex items-center gap-2 text-bordo-800 font-bold text-sm">
+                <span class="w-6 h-6 rounded-full bg-bordo-700 text-white flex items-center justify-center text-xs">1</span>
+                <span>Como usar a Agenda Diária</span>
+              </div>
+              <ul class="list-disc pl-5 space-y-1.5 text-stone-700">
+                <li>Funciona igual ao seu caderno (horários de <strong>07:00 às 21:00</strong>, de 30 em 30 min).</li>
+                <li>Clique na linha do horário desejado, digite o <strong>Nome</strong> e o <strong>WhatsApp</strong> do paciente e aperte <code>Enter</code> (ou clique fora).</li>
+                <li>Ao preencher, aparecem dois botões na direita: o <strong>botão verde (Avisar)</strong> já abre o WhatsApp com a mensagem de confirmação pronta; o <strong>botão vinho</strong> abre os documentos já com o nome do paciente preenchido.</li>
+              </ul>
+            </div>
+
+            <!-- Passo 2 -->
+            <div class="p-5 rounded-2xl bg-bordo-50/70 border border-bordo-200 space-y-2">
+              <div class="flex items-center gap-2 text-bordo-800 font-bold text-sm">
+                <span class="w-6 h-6 rounded-full bg-bordo-700 text-white flex items-center justify-center text-xs">2</span>
+                <span>Documentos Zero Papel & Assinatura</span>
+              </div>
+              <ul class="list-disc pl-5 space-y-1.5 text-stone-700">
+                <li>Na aba <strong>2. Documentos Zero Papel</strong>, escolha entre <em>Declaração, Atestado, Recibo, Termo de Canal ou Termo LGPD</em>.</li>
+                <li>Peça para o paciente assinar direto na tela do celular/tablet com o dedo ou caneta touch (nos termos de Canal e LGPD).</li>
+                <li><strong>Dica de ouro para a Dra.:</strong> Assine uma única vez no quadro e clique em <strong>"Memorizar Assinatura da Dra."</strong>. Nos próximos recibos ou atestados, basta clicar em <strong>"Aplicar Assinatura Salva"</strong>!</li>
+              </ul>
+            </div>
+
+            <!-- Passo 3 -->
+            <div class="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-2">
+              <div class="flex items-center gap-2 text-emerald-900 font-bold text-sm">
+                <span class="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs">3</span>
+                <span>Conformidade LGPD & Validade Jurídica</span>
+              </div>
+              <ul class="list-disc pl-5 space-y-1.5 text-stone-700">
+                <li>Todo documento assinado recebe automaticamente um <strong>Código de Auditoria Eletrônica (Hash)</strong> com data e hora exata, conforme a <strong>Lei 14.063/2020</strong>.</li>
+                <li>O <strong>Termo LGPD (Lei 13.709/2018)</strong> já está pronto para o paciente assinar no primeiro atendimento, protegendo o consultório quanto à guarda de dados sensíveis de saúde.</li>
+              </ul>
+            </div>
+
+            <!-- Passo 4 -->
+            <div class="p-5 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2">
+              <div class="flex items-center gap-2 text-amber-900 font-bold text-sm">
+                <span class="w-6 h-6 rounded-full bg-amber-600 text-white flex items-center justify-center text-xs">4</span>
+                <span>Como instalar no Celular como App</span>
+              </div>
+              <ul class="list-disc pl-5 space-y-1.5 text-stone-700">
+                <li><strong>No Android (Chrome):</strong> Toque nos 3 pontinhos no canto superior direito $ightarrow$ <strong>"Adicionar à tela inicial"</strong>.</li>
+                <li><strong>No iPhone (Safari):</strong> Toque no ícone de compartilhar (quadrado com seta para cima) $ightarrow$ <strong>"Adicionar à Tela de Início"</strong>.</li>
+                <li>Pronto! Ele cria um ícone igual a um aplicativo normal na tela do celular.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-6 p-4 rounded-xl bg-stone-900 text-stone-200 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div>
+              <strong class="text-amber-400">Suporte Direto Parceira Fundadora:</strong>
+              <span>Dúvidas ou sugestões de novos documentos após a aula de quinta-feira? Fale direto com o desenvolvedor.</span>
+            </div>
+            <a href="https://wa.me/5514998258384?text=Ol%C3%A1%20Jo%C3%A3o%20Marcos!%20Estou%20testando%20o%20OdontoLTG%20e%20queria%20falar%20sobre%20o%20sistema." target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold whitespace-nowrap transition">
+              <i class="fa-brands fa-whatsapp mr-1"></i>Chamar Suporte LTG
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- RODAPÉ LTG -->
@@ -541,7 +622,7 @@
     }
 
     function mudarAba(aba) {
-      ['agenda', 'documentos', 'anamnese', 'config'].forEach(id => {
+      ['agenda', 'documentos', 'anamnese', 'config', 'manual'].forEach(id => {
         document.getElementById(`sec-${id}`).classList.toggle('hidden', id !== aba);
         const btn = document.getElementById(`tab-${id}`);
         if (id === aba) {
