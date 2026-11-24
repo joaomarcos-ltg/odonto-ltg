@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OdontoLTG | Gestão Zero Papel, Agenda & Conformidade LGPD</title>
+  <meta name="description" content="Sistema odontológico Zero Papel com agenda simplificada, assinatura digital na tela e conformidade LGPD." />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Signature Pad (Assinatura Touch / S Pen / Mouse) -->
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Cormorant Garamond"', 'serif'],
+          },
+          colors: {
+            bordo: {
+              50: '#fdf6f6',
+              100: '#f9e6e8',
+              200: '#f2cdd1',
+              600: '#8a3b42',
+              700: '#722c33',
+              800: '#592026',
+              900: '#42161b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      #area-impressao, #area-impressao * { visibility: visible; }
+      #area-impressao {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .no-print { display: none !important; }
+    }
+    canvas.sig-canvas {
+      touch-action: none;
+    }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-800 font-sans antialiased">
+
+  <!-- FAIXA SUPERIOR LTG -->
+  <div class="bg-slate-950 text-slate-300 text-xs py-2 px-4 border-b border-slate-800 no-print">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">OdontoLTG • Zero Papel & LGPD</span>
+        <span class="hidden sm:inline text-slate-400">Edição Parceira Fundadora — Dra. Nadia Echeto</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="badge-dentista-ativo" class="text-emerald-400 font-semibold"></span>
+        <a href="https://sites.legiaotecnica.com.br" class="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 transition">
+          <i class="fa-solid fa-arrow-left text-[10px]"></i>
+          <span>Portal LTG</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CABEÇALHO DO CONSULTÓRIO -->
+  <header class="bg-white border-b border-bordo-200 sticky top-0 z-30 shadow-sm no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-bordo-700 text-white flex items-center justify-center shadow-md">
+          <i class="fa-solid fa-tooth text-2xl"></i>
+        </div>
+        <div>
+          <h1 id="hdr-nome" class="font-serif text-2xl sm:text-3xl font-bold text-bordo-800 leading-none">Dra. Nadia Garcia Echeto Silva</h1>
+          <p id="hdr-sub" class="text-xs text-stone-500 font-medium mt-1">Cirurgiã-Dentista • CRO-SP 125.474 • Guaiçara - SP</p>
+        </div>
+      </div>
+
+      <!-- Navegação Principal (Ultra Simples) -->
+      <nav class="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-center bg-bordo-50 p-1.5 rounded-2xl border border-bordo-200">
+        <button onclick="mudarAba('agenda')" id="tab-agenda" class="nav-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-bordo-700 text-white shadow-sm transition flex items-center gap-1.5">
+          <i class="fa-solid fa-calendar-day"></i>
+          <span>1. Agenda</span>
+        </button>
+        <button onclick="mudarAba('documentos')" id="tab-documentos" class="nav-btn px-3.5 py-2 rounded-xl text-xs font-bold text-bordo-800 hover:bg-bordo-100 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-file-signature"></i>
+          <span>2. Documentos Zero Papel</span>
+        </button>
+        <button onclick="mudarAba('anamnese')" id="tab-anamnese" class="nav-btn px-3.5 py-2 rounded-xl text-xs font-bold text-bordo-800 hover:bg-bordo-100 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-clipboard-user"></i>
+          <span>3. Ficha & Anamnese</span>
+        </button>
+        <button onclick="mudarAba('config')" id="tab-config" class="nav-btn px-3.5 py-2 rounded-xl text-xs font-bold text-bordo-800 hover:bg-bordo-100 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-gear"></i>
+          <span>Consultório</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+
+    <!-- ========================================================= -->
+    <!-- ABA 1: AGENDA TIPO CADERNO (07:00 ÀS 21:00 - 30 EM 30 MIN) -->
+    <!-- ========================================================= -->
+    <section id="sec-agenda" class="space-y-5">
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-bordo-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-bordo-600">Modelo Caderno Digital • Rápido & Sem Burocracia</span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-stone-800">Agenda Diária do Consultório</h2>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="alterarDia(-1)" class="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition" title="Dia Anterior">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <input type="date" id="dataAgenda" onchange="renderizarAgenda()" class="bg-bordo-50 border border-bordo-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold text-bordo-900 focus:outline-none">
+          <button onclick="alterarDia(1)" class="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition" title="Próximo Dia">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          <button onclick="irParaHoje()" class="px-3.5 py-2 rounded-xl bg-bordo-700 hover:bg-bordo-800 text-white font-bold text-xs transition">
+            Hoje
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-bordo-200 shadow-sm overflow-hidden">
+        <div class="bg-bordo-700 text-white px-4 py-3 text-xs font-bold grid grid-cols-12 gap-2 items-center">
+          <div class="col-span-2 sm:col-span-1">Horário</div>
+          <div class="col-span-5 sm:col-span-4">Nome do Paciente</div>
+          <div class="col-span-5 sm:col-span-3">WhatsApp / Celular</div>
+          <div class="hidden sm:block sm:col-span-2">Procedimento / Obs.</div>
+          <div class="col-span-12 sm:col-span-2 text-right hidden sm:block">Ações Rápidas</div>
+        </div>
+        <div id="listaHorarios" class="divide-y divide-stone-200"></div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- ABA 2: DOCUMENTOS ZERO PAPEL + ASSINATURA TOUCH / S PEN   -->
+    <!-- ========================================================= -->
+    <section id="sec-documentos" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Painel Esquerdo: Preenchimento + Quadro de Assinatura -->
+        <div class="lg:col-span-5 space-y-5 no-print">
+          <div class="bg-white rounded-2xl p-5 border border-bordo-200 shadow-sm space-y-4">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-bordo-600">Emissão Instantânea</span>
+              <h2 class="font-serif text-2xl font-bold text-stone-800">1. Escolha o Documento</h2>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <button onclick="selecionarDoc('comparecimento')" id="btn-doc-comparecimento" class="doc-type-btn p-3 rounded-xl border-2 border-bordo-700 bg-bordo-50 text-bordo-900 font-bold text-left transition">
+                <i class="fa-solid fa-clock text-bordo-700 mb-1 block"></i>
+                Declaração de Comparecimento
+              </button>
+              <button onclick="selecionarDoc('atestado')" id="btn-doc-atestado" class="doc-type-btn p-3 rounded-xl border border-stone-200 bg-white text-stone-700 font-semibold text-left hover:border-bordo-400 transition">
+                <i class="fa-solid fa-notes-medical text-bordo-700 mb-1 block"></i>
+                Atestado Odontológico
+              </button>
+              <button onclick="selecionarDoc('recibo')" id="btn-doc-recibo" class="doc-type-btn p-3 rounded-xl border border-stone-200 bg-white text-stone-700 font-semibold text-left hover:border-bordo-400 transition">
+                <i class="fa-solid fa-receipt text-bordo-700 mb-1 block"></i>
+                Recibo (IR / Paciente)
+              </button>
+              <button onclick="selecionarDoc('endodontia')" id="btn-doc-endodontia" class="doc-type-btn p-3 rounded-xl border border-stone-200 bg-white text-stone-700 font-semibold text-left hover:border-bordo-400 transition">
+                <i class="fa-solid fa-file-shield text-bordo-700 mb-1 block"></i>
+                Termo Consentimento Canal
+              </button>
+              <button onclick="selecionarDoc('lgpd')" id="btn-doc-lgpd" class="doc-type-btn col-span-2 p-3 rounded-xl border border-emerald-200 bg-emerald-50/60 text-emerald-900 font-bold text-left hover:border-emerald-500 transition flex items-center justify-between">
+                <span><i class="fa-solid fa-shield-halved text-emerald-700 mr-1.5"></i>Termo de Consentimento LGPD (Obrigatório Saúde)</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-600 text-white">LGPD</span>
+              </button>
+            </div>
+
+            <!-- Campos Dinâmicos do Paciente -->
+            <div class="space-y-3 pt-2 border-t border-stone-200 text-xs">
+              <div>
+                <label class="font-bold text-stone-700 block mb-1">Nome Completo do Paciente *</label>
+                <input type="text" id="docPaciente" oninput="atualizarPreviewDoc()" placeholder="Ex: João Marcos Silva" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-bordo-600">
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="font-bold text-stone-700 block mb-1">CPF ou RG</label>
+                  <input type="text" id="docCpf" oninput="atualizarPreviewDoc()" placeholder="000.000.000-00" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 focus:outline-none focus:border-bordo-600">
+                </div>
+                <div>
+                  <label class="font-bold text-stone-700 block mb-1">WhatsApp do Paciente</label>
+                  <input type="text" id="docWhats" placeholder="(14) 99999-9999" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 focus:outline-none focus:border-bordo-600">
+                </div>
+              </div>
+
+              <!-- Campos Específicos: Comparecimento -->
+              <div id="campos-comparecimento" class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="font-bold text-stone-700 block mb-1">Horário Início</label>
+                  <input type="time" id="docHoraIni" value="14:00" oninput="atualizarPreviewDoc()" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2">
+                </div>
+                <div>
+                  <label class="font-bold text-stone-700 block mb-1">Horário Término</label>
+                  <input type="time" id="docHoraFim" value="15:00" oninput="atualizarPreviewDoc()" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2">
+                </div>
+              </div>
+
+              <!-- Campos Específicos: Atestado -->
+              <div id="campos-atestado" class="hidden space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="font-bold text-stone-700 block mb-1">Dias de Afastamento</label>
+                    <input type="number" id="docDias" value="1" min="1" oninput="atualizarPreviewDoc()" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2">
+                  </div>
+                  <div>
+                    <label class="font-bold text-stone-700 block mb-1">CID-10 (c/ autorização)</label>
+                    <input type="text" id="docCid" placeholder="Opcional (ex: K02.1)" oninput="atualizarPreviewDoc()" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2">
+                  </div>
+                </div>
+                <div>
+                  <label class="font-bold text-stone-700 block mb-1">Endereço do Paciente</label>
+                  <input type="text" id="docEnderecoPac" placeholder="Rua, nº, Bairro - Cidade" oninput="atualizarPreviewDoc()" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2">
+                </div>
+              </div>
+
+              <!-- Campos Específicos: Recibo -->
+              <div id="campos-recibo" class="hidden space-y-3">
+                <div>
+                  <label class="font-bold text-stone-700 block mb-1">Valor Recebido (R$)</label>
+                  <input type="text" id="docValor" value="150,00" oninput="atualizarPreviewDoc()" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2 font-bold">
+                </div>
+                <div>
+                  <label class="font-bold text-stone-700 block mb-1">Referente ao Procedimento</label>
+                  <input type="text" id="docRef" value="Atendimento odontológico / Profilaxia" oninput="atualizarPreviewDoc()" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3 py-2">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- QUADRO DE ASSINATURA DIGITAL (S PEN / DEDO / MOUSE) -->
+          <div class="bg-white rounded-2xl p-5 border-2 border-bordo-600 shadow-md space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-bordo-700 block">Zero Papel • Caneta S Pen ou Dedo</span>
+                <h3 id="titulo-assinatura" class="font-bold text-sm text-stone-800">2. Assinatura Digital na Tela</h3>
+              </div>
+              <button type="button" onclick="limparAssinatura()" class="px-3 py-1.5 rounded-lg bg-stone-100 hover:bg-rose-100 text-stone-700 hover:text-rose-700 text-xs font-bold transition">
+                <i class="fa-solid fa-eraser mr-1"></i>Limpar
+              </button>
+            </div>
+
+            <div class="border-2 border-dashed border-bordo-300 rounded-xl bg-bordo-50/40 overflow-hidden">
+              <canvas id="canvasAssinatura" class="sig-canvas w-full h-36 cursor-crosshair"></canvas>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 text-xs">
+              <button type="button" onclick="salvarAssinaturaDentista()" id="btn-salvar-sig-dra" class="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold transition">
+                <i class="fa-solid fa-bookmark mr-1 text-bordo-700"></i>Memorizar Assinatura da Dra.
+              </button>
+              <button type="button" onclick="usarAssinaturaDentistaSalva()" id="btn-usar-sig-dra" class="px-3 py-2 rounded-xl bg-bordo-100 hover:bg-bordo-200 text-bordo-900 font-bold transition">
+                <i class="fa-solid fa-stamp mr-1"></i>Aplicar Assinatura Salva
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Painel Direito: Pré-Visualização Oficial do Documento + Ações -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-bordo-200 shadow-sm no-print">
+            <span class="text-xs font-bold text-stone-600"><i class="fa-solid fa-eye text-bordo-700 mr-1.5"></i>Documento Pronto com Carimbo de Autenticidade</span>
+            <div class="flex items-center gap-2">
+              <button onclick="enviarDocWhatsApp()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow transition">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span>Enviar no WhatsApp</span>
+              </button>
+              <button onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-bordo-700 hover:bg-bordo-800 text-white font-bold text-xs flex items-center gap-1.5 shadow transition">
+                <i class="fa-solid fa-print"></i>
+                <span>Imprimir / Salvar PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- FOLHA A4 DO DOCUMENTO -->
+          <div id="area-impressao" class="bg-white rounded-2xl p-8 sm:p-12 border border-stone-300 shadow-lg min-h-[680px] flex flex-col justify-between">
+            <!-- Cabeçalho Timbrado -->
+            <div>
+              <div class="flex items-center justify-between border-b-2 border-bordo-700 pb-4 mb-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-full border-2 border-bordo-700 text-bordo-700 flex items-center justify-center">
+                    <i class="fa-solid fa-tooth text-2xl"></i>
+                  </div>
+                  <div>
+                    <h2 id="doc-timbre-nome" class="font-serif text-2xl font-bold text-bordo-800 leading-tight">Dra. Nadia Garcia Echeto Silva</h2>
+                    <p id="doc-timbre-cro" class="text-xs font-bold text-stone-600">Cirurgiã-Dentista • CRO-SP 125.474</p>
+                  </div>
+                </div>
+                <div class="text-right text-[11px] text-stone-500">
+                  <p id="doc-timbre-end">Av. 9 de Julho, 290 - Centro</p>
+                  <p id="doc-timbre-cid">Guaiçara - SP</p>
+                  <p id="doc-timbre-tel">(14) 3547-1267 | (14) 98225-1193</p>
+                </div>
+              </div>
+
+              <!-- Corpo Dinâmico do Documento -->
+              <div id="conteudo-documento" class="text-sm text-stone-800 leading-relaxed space-y-4"></div>
+            </div>
+
+            <!-- Área de Assinatura + Selo Jurídico/LGPD -->
+            <div class="mt-10 pt-4">
+              <div class="flex flex-col items-center justify-center">
+                <img id="img-assinatura-doc" src="" alt="Assinatura Digital" class="h-20 object-contain hidden -mb-2" />
+                <div class="w-72 border-t border-stone-800 pt-1.5 text-center text-xs">
+                  <p id="legenda-assinatura" class="font-bold text-stone-800">Dra. Nadia Garcia Echeto Silva • CRO-SP 125.474</p>
+                </div>
+              </div>
+
+              <!-- Carimbo Eletrônico de Auditoria -->
+              <div class="mt-6 p-3 rounded-xl bg-stone-50 border border-stone-200 text-[10px] text-stone-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <div>
+                  <strong class="text-stone-700">Registro Eletrônico Zero Papel (Lei 14.063/2020 & LGPD):</strong>
+                  <span id="hash-auditoria">Aguardando assinatura na tela...</span>
+                </div>
+                <span id="doc-rodape-email" class="font-semibold text-bordo-700">nadia_echeto@hotmail.com</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- ABA 3: FICHA CLÍNICA & ANAMNESE DIGITAL (FIEL AO PAPEL)   -->
+    <!-- ========================================================= -->
+    <section id="sec-anamnese" class="hidden">
+      <div class="max-w-4xl mx-auto bg-white rounded-2xl p-6 sm:p-8 border border-bordo-200 shadow-sm space-y-6">
+        <div class="border-b border-bordo-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-bordo-600">Prontuário Digital Padronizado</span>
+            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-bordo-800">Identificação & Anamnese do Paciente</h2>
+          </div>
+          <button onclick="salvarAnamnese()" class="px-5 py-2.5 rounded-xl bg-bordo-700 hover:bg-bordo-800 text-white font-bold text-xs shadow transition">
+            <i class="fa-solid fa-floppy-disk mr-1.5"></i>Salvar Prontuário
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div class="sm:col-span-2">
+            <label class="font-bold text-stone-700 block mb-1">Nome Completo *</label>
+            <input type="text" id="anaNome" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+          </div>
+          <div>
+            <label class="font-bold text-stone-700 block mb-1">Data de Nascimento</label>
+            <input type="date" id="anaNasc" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+          </div>
+          <div>
+            <label class="font-bold text-stone-700 block mb-1">CPF</label>
+            <input type="text" id="anaCpf" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+          </div>
+          <div>
+            <label class="font-bold text-stone-700 block mb-1">Celular / WhatsApp</label>
+            <input type="text" id="anaCel" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+          </div>
+          <div>
+            <label class="font-bold text-stone-700 block mb-1">Profissão</label>
+            <input type="text" id="anaProf" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+          </div>
+        </div>
+
+        <!-- As 8 Perguntas Oficiais da Ficha da Dra. Nadia -->
+        <div class="bg-bordo-50/70 p-5 rounded-2xl border border-bordo-200 space-y-3 text-xs">
+          <h3 class="font-bold text-bordo-900 uppercase tracking-wider text-xs mb-2">Questionário de Saúde (Anamnese)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">1. Possui algum problema de saúde? Qual?</label>
+              <input type="text" id="q1" placeholder="Não / Especificar..." class="w-full bg-white border border-stone-300 rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">2. Está sob tratamento médico atualmente?</label>
+              <input type="text" id="q2" placeholder="Não / Por quê?" class="w-full bg-white border border-stone-300 rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">3. Faz uso de algum medicamento?</label>
+              <input type="text" id="q3" placeholder="Não / Quais?" class="w-full bg-white border border-stone-300 rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">4. Alergia a medicamento/anestésico?</label>
+              <input type="text" id="q4" placeholder="Não / Quais?" class="w-full bg-white border border-stone-300 rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">5. Pressão arterial / Fumante?</label>
+              <input type="text" id="q5" placeholder="Ex: Normal / Não fumante" class="w-full bg-white border border-stone-300 rounded-lg px-3 py-2">
+            </div>
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">6. Sangramento gengival ou sensibilidade?</label>
+              <input type="text" id="q6" placeholder="Não / Especificar..." class="w-full bg-white border border-stone-300 rounded-lg px-3 py-2">
+            </div>
+          </div>
+          <div>
+            <label class="font-bold text-stone-700 block mb-1">Plano de Tratamento & Observações Clínicas</label>
+            <textarea id="anaPlano" rows="3" class="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2.5"></textarea>
+          </div>
+        </div>
+
+        <div id="listaProntuariosSalvos" class="space-y-2 text-xs"></div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- ABA 4: CONFIGURAÇÃO MULTI-DENTISTA (WHITE-LABEL)          -->
+    <!-- ========================================================= -->
+    <section id="sec-config" class="hidden">
+      <div class="max-w-2xl mx-auto bg-white rounded-2xl p-6 sm:p-8 border border-bordo-200 shadow-sm space-y-5">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-bordo-600">Personalização Automática do Timbre & LGPD</span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-bordo-800">Dados do Cirurgião-Dentista</h2>
+          <p class="text-xs text-stone-500 mt-1">Altere estes dados para adaptar instantaneamente todo o sistema para qualquer consultório odontológico.</p>
+        </div>
+
+        <form id="formConfig" class="space-y-4 text-xs">
+          <div>
+            <label class="font-bold text-stone-700 block mb-1">Nome Profissional Completo *</label>
+            <input type="text" id="cfgNome" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5 font-semibold">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">CRO / UF *</label>
+              <input type="text" id="cfgCro" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+            </div>
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">CPF ou CNPJ (para Recibos)</label>
+              <input type="text" id="cfgCpf" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">Endereço do Consultório</label>
+              <input type="text" id="cfgEnd" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+            </div>
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">Cidade - UF</label>
+              <input type="text" id="cfgCid" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">Telefones / WhatsApp</label>
+              <input type="text" id="cfgTel" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+            </div>
+            <div>
+              <label class="font-bold text-stone-700 block mb-1">E-mail (Encarregado LGPD)</label>
+              <input type="email" id="cfgEmail" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-3.5 py-2.5">
+            </div>
+          </div>
+          <button type="submit" class="w-full py-3 rounded-xl bg-bordo-700 hover:bg-bordo-800 text-white font-bold text-sm shadow transition">
+            Salvar Dados do Consultório
+          </button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RODAPÉ LTG -->
+  <footer class="bg-slate-950 text-slate-400 border-t border-slate-800 py-6 px-4 text-xs mt-12 no-print">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p><strong>OdontoLTG</strong> • Tecnologia Zero Papel por Legião Técnica Group © 2026</p>
+      <div class="flex items-center gap-3 flex-wrap justify-center">
+        <a href="https://termos.legiaotecnica.com.br/#lgpd" target="_blank" class="hover:text-white transition">LGPD</a>
+        <span>•</span>
+        <a href="https://termos.legiaotecnica.com.br/#termos" target="_blank" class="hover:text-white transition">Termos de Uso</a>
+        <span>•</span>
+        <a href="https://termos.legiaotecnica.com.br/#privacidade" target="_blank" class="hover:text-white transition">Privacidade</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Dados Padrão (Dra. Nadia Garcia Echeto Silva)
+    const DADOS_PADRAO = {
+      nome: "Dra. Nadia Garcia Echeto Silva",
+      cro: "CRO-SP 125.474",
+      cpf: "419.019.138-80",
+      endereco: "Av. 9 de Julho, 290 - Centro",
+      cidade: "Guaiçara - SP",
+      telefone: "(14) 3547-1267 | (14) 98225-1193",
+      email: "nadia_echeto@hotmail.com"
+    };
+
+    let perfil = JSON.parse(localStorage.getItem('odonto_ltg_perfil')) || DADOS_PADRAO;
+    let agendaDados = JSON.parse(localStorage.getItem('odonto_ltg_agenda')) || {};
+    let prontuarios = JSON.parse(localStorage.getItem('odonto_ltg_prontuarios')) || [];
+    let docAtual = 'comparecimento';
+    let signaturePad = null;
+
+    // Horários de 30 em 30 min (07:00 às 21:00 — igual ao caderno Uniodonto dela)
+    const HORARIOS = [];
+    for (let h = 7; h <= 21; h++) {
+      const hh = String(h).padStart(2, '0');
+      HORARIOS.push(`${hh}:00`);
+      if (h < 21) HORARIOS.push(`${hh}:30`);
+    }
+
+    function aplicarPerfil() {
+      document.getElementById('hdr-nome').innerText = perfil.nome;
+      document.getElementById('hdr-sub').innerText = `Cirurgiã-Dentista • ${perfil.cro} • ${perfil.cidade}`;
+      document.getElementById('badge-dentista-ativo').innerText = `Consultório Ativo: ${perfil.nome}`;
+      document.getElementById('doc-timbre-nome').innerText = perfil.nome;
+      document.getElementById('doc-timbre-cro').innerText = `Cirurgiã-Dentista • ${perfil.cro}`;
+      document.getElementById('doc-timbre-end').innerText = perfil.endereco;
+      document.getElementById('doc-timbre-cid').innerText = perfil.cidade;
+      document.getElementById('doc-timbre-tel').innerText = perfil.telefone;
+      document.getElementById('doc-rodape-email').innerText = perfil.email;
+
+      document.getElementById('cfgNome').value = perfil.nome;
+      document.getElementById('cfgCro').value = perfil.cro;
+      document.getElementById('cfgCpf').value = perfil.cpf;
+      document.getElementById('cfgEnd').value = perfil.endereco;
+      document.getElementById('cfgCid').value = perfil.cidade;
+      document.getElementById('cfgTel').value = perfil.telefone;
+      document.getElementById('cfgEmail').value = perfil.email;
+      atualizarPreviewDoc();
+    }
+
+    function mudarAba(aba) {
+      ['agenda', 'documentos', 'anamnese', 'config'].forEach(id => {
+        document.getElementById(`sec-${id}`).classList.toggle('hidden', id !== aba);
+        const btn = document.getElementById(`tab-${id}`);
+        if (id === aba) {
+          btn.className = "nav-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-bordo-700 text-white shadow-sm transition flex items-center gap-1.5";
+        } else {
+          btn.className = "nav-btn px-3.5 py-2 rounded-xl text-xs font-bold text-bordo-800 hover:bg-bordo-100 transition flex items-center gap-1.5";
+        }
+      });
+      if (aba === 'documentos') {
+        setTimeout(redimensionarCanvas, 50);
+      }
+    }
+
+    // ================= AGENDA =================
+    function irParaHoje() {
+      const hoje = new Date();
+      const iso = hoje.toISOString().split('T')[0];
+      document.getElementById('dataAgenda').value = iso;
+      renderizarAgenda();
+    }
+
+    function alterarDia(delta) {
+      const inp = document.getElementById('dataAgenda');
+      const d = new Date(inp.value + 'T12:00:00');
+      d.setDate(d.getDate() + delta);
+      inp.value = d.toISOString().split('T')[0];
+      renderizarAgenda();
+    }
+
+    function renderizarAgenda() {
+      const dataSel = document.getElementById('dataAgenda').value;
+      const lista = document.getElementById('listaHorarios');
+      const diaObj = agendaDados[dataSel] || {};
+
+      lista.innerHTML = HORARIOS.map(hora => {
+        const reg = diaObj[hora] || { nome: '', tel: '', obs: '' };
+        const preenchido = reg.nome.trim() !== '';
+        return `
+          <div class="px-4 py-2 grid grid-cols-12 gap-2 items-center ${preenchido ? 'bg-bordo-50/60' : 'hover:bg-stone-50'} transition">
+            <div class="col-span-2 sm:col-span-1 font-bold text-xs ${preenchido ? 'text-bordo-800' : 'text-stone-500'}">${hora}</div>
+            <div class="col-span-5 sm:col-span-4">
+              <input type="text" value="${reg.nome}" placeholder="Disponível..."
+                onchange="salvarSlot('${dataSel}', '${hora}', 'nome', this.value)"
+                class="w-full bg-transparent border-b border-transparent focus:border-bordo-500 focus:bg-white rounded px-2 py-1 text-xs font-semibold text-stone-800 focus:outline-none">
+            </div>
+            <div class="col-span-5 sm:col-span-3">
+              <input type="text" value="${reg.tel}" placeholder="(14) 99999-9999"
+                onchange="salvarSlot('${dataSel}', '${hora}', 'tel', this.value)"
+                class="w-full bg-transparent border-b border-transparent focus:border-bordo-500 focus:bg-white rounded px-2 py-1 text-xs text-stone-600 focus:outline-none">
+            </div>
+            <div class="col-span-8 sm:col-span-2">
+              <input type="text" value="${reg.obs}" placeholder="Ex: Canal / Limpeza"
+                onchange="salvarSlot('${dataSel}', '${hora}', 'obs', this.value)"
+                class="w-full bg-transparent border-b border-transparent focus:border-bordo-500 focus:bg-white rounded px-2 py-1 text-xs text-stone-500 focus:outline-none">
+            </div>
+            <div class="col-span-4 sm:col-span-2 flex items-center justify-end gap-1.5">
+              ${preenchido ? `
+                <button onclick="confirmarWhatsApp('${dataSel}', '${hora}')" title="Confirmar no WhatsApp"
+                  class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold flex items-center gap-1 transition">
+                  <i class="fa-brands fa-whatsapp"></i>
+                  <span class="hidden md:inline">Avisar</span>
+                </button>
+                <button onclick="abrirDocDoPaciente('${dataSel}', '${hora}')" title="Gerar Recibo / Atestado / Termo"
+                  class="px-2.5 py-1 rounded-lg bg-bordo-700 hover:bg-bordo-800 text-white text-[11px] font-bold transition">
+                  <i class="fa-solid fa-file-signature"></i>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function salvarSlot(data, hora, campo, valor) {
+      if (!agendaDados[data]) agendaDados[data] = {};
+      if (!agendaDados[data][hora]) agendaDados[data][hora] = { nome: '', tel: '', obs: '' };
+      agendaDados[data][hora][campo] = valor;
+      localStorage.setItem('odonto_ltg_agenda', JSON.stringify(agendaDados));
+      renderizarAgenda();
+    }
+
+    function confirmarWhatsApp(data, hora) {
+      const reg = agendaDados[data][hora];
+      const num = reg.tel.replace(/\D/g, '');
+      if (!num) {
+        alert('Digite o número de WhatsApp do paciente primeiro.');
+        return;
+      }
+      const dataBr = data.split('-').reverse().join('/');
+      const msg = `Olá *${reg.nome}*, tudo bem? 😊\n\nConfirmando sua consulta odontológica com *${perfil.nome}*:\n📅 *Data:* ${dataBr}\n⏰ *Horário:* ${hora}\n📍 *Local:* ${perfil.endereco}, ${perfil.cidade}\n\nPodemos confirmar sua presença?`;
+      window.open(`https://wa.me/55${num}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function abrirDocDoPaciente(data, hora) {
+      const reg = agendaDados[data][hora];
+      document.getElementById('docPaciente').value = reg.nome;
+      document.getElementById('docWhats').value = reg.tel;
+      mudarAba('documentos');
+      atualizarPreviewDoc();
+    }
+
+    // ================= DOCUMENTOS & ASSINATURA =================
+    function inicializarCanvas() {
+      const canvas = document.getElementById('canvasAssinatura');
+      signaturePad = new SignaturePad(canvas, {
+        penColor: '#1e1b4b',
+        minWidth: 1,
+        maxWidth: 2.5
+      });
+      signaturePad.addEventListener("endStroke", () => {
+        aplicarAssinaturaNoDocumento(signaturePad.toDataURL());
+      });
+      redimensionarCanvas();
+    }
+
+    function redimensionarCanvas() {
+      const canvas = document.getElementById('canvasAssinatura');
+      if (!canvas) return;
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+      if (signaturePad) signaturePad.clear();
+    }
+
+    function limparAssinatura() {
+      if (signaturePad) signaturePad.clear();
+      document.getElementById('img-assinatura-doc').classList.add('hidden');
+      document.getElementById('hash-auditoria').innerText = "Aguardando assinatura na tela...";
+    }
+
+    function aplicarAssinaturaNoDocumento(dataUrl) {
+      const img = document.getElementById('img-assinatura-doc');
+      img.src = dataUrl;
+      img.classList.remove('hidden');
+      const agora = new Date().toLocaleString('pt-BR');
+      const hash = 'LTG-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+      document.getElementById('hash-auditoria').innerText = `Assinado digitalmente em ${agora} • Cód: ${hash}`;
+    }
+
+    function salvarAssinaturaDentista() {
+      if (!signaturePad || signaturePad.isEmpty()) {
+        alert('Faça primeiro a assinatura da Dra. no quadro acima usando a caneta S Pen ou o dedo.');
+        return;
+      }
+      localStorage.setItem('odonto_ltg_sig_dentista', signaturePad.toDataURL());
+      alert('Assinatura da Dra. memorizada com sucesso! Agora basta clicar em "Aplicar Assinatura Salva" nos próximos documentos.');
+    }
+
+    function usarAssinaturaDentistaSalva() {
+      const salva = localStorage.getItem('odonto_ltg_sig_dentista');
+      if (!salva) {
+        alert('Nenhuma assinatura memorizada ainda. Desenhe no quadro e clique em "Memorizar Assinatura da Dra.".');
+        return;
+      }
+      aplicarAssinaturaNoDocumento(salva);
+    }
+
+    function selecionarDoc(tipo) {
+      docAtual = tipo;
+      document.querySelectorAll('.doc-type-btn').forEach(b => {
+        b.classList.remove('border-2', 'border-bordo-700', 'bg-bordo-50');
+      });
+      const ativo = document.getElementById(`btn-doc-${tipo}`);
+      if (ativo) ativo.classList.add('border-2', 'border-bordo-700', 'bg-bordo-50');
+
+      ['comparecimento', 'atestado', 'recibo'].forEach(c => {
+        document.getElementById(`campos-${c}`).classList.toggle('hidden', c !== tipo);
+      });
+
+      const ehPacienteAssina = (tipo === 'endodontia' || tipo === 'lgpd');
+      document.getElementById('titulo-assinatura').innerText = ehPacienteAssina
+        ? '2. Assinatura do PACIENTE (Caneta S Pen ou Dedo)'
+        : '2. Assinatura da DENTISTA (Caneta S Pen ou Dedo)';
+
+      limparAssinatura();
+      atualizarPreviewDoc();
+    }
+
+    function atualizarPreviewDoc() {
+      const pac = document.getElementById('docPaciente').value.trim() || '________________________________________';
+      const cpf = document.getElementById('docCpf').value.trim() || '___.___.___-__';
+      const hojeExtenso = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+      const cidadeBase = perfil.cidade.split('-')[0].trim();
+      const box = document.getElementById('conteudo-documento');
+      const legenda = document.getElementById('legenda-assinatura');
+
+      if (docAtual === 'comparecimento') {
+        const ini = document.getElementById('docHoraIni').value;
+        const fim = document.getElementById('docHoraFim').value;
+        legenda.innerText = `${perfil.nome} • ${perfil.cro}`;
+        box.innerHTML = `
+          <h3 class="text-center font-bold text-lg uppercase tracking-wider text-bordo-800 py-3">Declaração de Comparecimento</h3>
+          <p class="text-justify indent-8">Declaro, para os devidos fins trabalhistas e escolares, que o(a) Sr.(a) <strong>${pac}</strong>, inscrito(a) no CPF/RG sob nº <strong>${cpf}</strong>, compareceu a este consultório odontológico na data de hoje, no período das <strong>${ini}</strong> às <strong>${fim}</strong> horas, para atendimento clínico odontológico.</p>
+          <p class="pt-6 text-right">${cidadeBase}, ${hojeExtenso}.</p>
+        `;
+      } else if (docAtual === 'atestado') {
+        const dias = document.getElementById('docDias').value || '1';
+        const cid = document.getElementById('docCid').value.trim();
+        const endPac = document.getElementById('docEnderecoPac').value.trim() || '___________________________________';
+        legenda.innerText = `${perfil.nome} • ${perfil.cro}`;
+        box.innerHTML = `
+          <h3 class="text-center font-bold text-lg uppercase tracking-wider text-bordo-800 py-3">Atestado Odontológico</h3>
+          <p class="text-justify indent-8">Atesto, para os devidos fins, que o(a) Sr.(a) <strong>${pac}</strong>, portador(a) do documento nº <strong>${cpf}</strong>, residente e domiciliado(a) à ${endPac}, esteve sob meus cuidados profissionais neste consultório odontológico na data de hoje, necessitando o(a) mesmo(a) de <strong>${dias} dia(s)</strong> de afastamento/convalescença de suas atividades habituais a contar desta data.</p>
+          ${cid ? `<p class="font-semibold">CID-10 (com autorização expressa do paciente): <strong>${cid}</strong></p>` : ''}
+          <p class="pt-6 text-right">${cidadeBase}, ${hojeExtenso}.</p>
+        `;
+      } else if (docAtual === 'recibo') {
+        const val = document.getElementById('docValor').value || '0,00';
+        const ref = document.getElementById('docRef').value || 'Tratamento odontológico';
+        legenda.innerText = `${perfil.nome} • CPF: ${perfil.cpf} • ${perfil.cro}`;
+        box.innerHTML = `
+          <div class="flex items-center justify-between bg-bordo-50 p-3 rounded-xl border border-bordo-200">
+            <h3 class="font-bold text-lg uppercase tracking-wider text-bordo-800">Recibo Odontológico</h3>
+            <span class="font-bold text-lg text-bordo-900">R$ ${val}</span>
+          </div>
+          <p class="text-justify indent-8 pt-2">Recebi de <strong>${pac}</strong>, inscrito(a) no CPF sob nº <strong>${cpf}</strong>, a importância de <strong>R$ ${val}</strong>, referente a <strong>${ref}</strong>, dando-lhe plena e geral quitação.</p>
+          <p class="pt-6 text-right">${cidadeBase}, ${hojeExtenso}.</p>
+        `;
+      } else if (docAtual === 'endodontia') {
+        legenda.innerText = `Assinatura do Paciente: ${pac}`;
+        box.innerHTML = `
+          <h3 class="text-center font-bold text-base uppercase tracking-wider text-bordo-800">Termo de Consentimento Informado — Endodontia</h3>
+          <p class="text-xs text-justify">Eu, <strong>${pac}</strong> (CPF/RG: <strong>${cpf}</strong>), fui informado(a) pelo(a) CD <strong>${perfil.nome}</strong> (${perfil.cro}) que necessito de tratamento endodôntico (canal). Estou ciente sobre o método proposto explicado, as vantagens comparado à extração e possíveis riscos inerentes:</p>
+          <ol class="list-decimal pl-5 text-[11px] space-y-1 text-stone-700">
+            <li>Desconforto após o tratamento que pode durar horas ou alguns dias, sendo às vezes necessário o uso de medicamentos prescritos;</li>
+            <li>Edema (inchaço) na gengiva próximo ao dente tratado ou edema facial que poderá persistir por alguns dias;</li>
+            <li>Infecção pós-operatória;</li>
+            <li>Trismo (limitação temporária da abertura da boca);</li>
+            <li>Índice de insucesso estatístico de 5 a 10% nos tratamentos primários e de 15 a 40% nos retratamentos, podendo requerer cirurgia parendodôntica ou extração;</li>
+            <li>Possibilidade de fratura de instrumentos endodônticos dentro da raiz do dente;</li>
+            <li>Perfuração do canal radicular com instrumentos, podendo necessitar intervenção cirúrgica;</li>
+            <li>Perda prematura do dente devido à doença periodontal progressiva;</li>
+            <li>Limitações de interpretação em imagens radiográficas bidimensionais;</li>
+            <li>Restaurações altas ou falta de restauração definitiva podem comprometer o sucesso do tratamento de canal e provocar fratura dentária.</li>
+          </ol>
+          <p class="text-xs text-justify">Declaro ter esclarecido todas as minhas dúvidas e autorizo a realização do procedimento.</p>
+          <p class="text-right text-xs">${cidadeBase}, ${hojeExtenso}.</p>
+        `;
+      } else if (docAtual === 'lgpd') {
+        legenda.innerText = `Titular dos Dados (Paciente): ${pac}`;
+        box.innerHTML = `
+          <h3 class="text-center font-bold text-base uppercase tracking-wider text-emerald-800">Termo de Consentimento para Tratamento de Dados Pessoais e Sensíveis (LGPD)</h3>
+          <p class="text-xs text-justify">Em conformidade com a <strong>Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018 — Arts. 7º e 11)</strong>, eu, <strong>${pac}</strong>, inscrito(a) no CPF sob nº <strong>${cpf}</strong>, autorizo o(a) Cirurgião(ã)-Dentista <strong>${perfil.nome}</strong> (${perfil.cro}), na qualidade de Controlador(a), a coletar, armazenar e tratar meus dados pessoais e dados sensíveis de saúde (anamnese, odontograma, exames radiográficos, receitas, atestados e recibos).</p>
+          <ul class="list-disc pl-5 text-xs space-y-1.5 text-stone-700">
+            <li><strong>Finalidade Exclusiva:</strong> Prestação de serviços odontológicos, acompanhamento clínico, emissão de documentos fiscais/legais e envio de lembretes de consulta via WhatsApp.</li>
+            <li><strong>Sigilo & Guarda Legal:</strong> Os registros clínicos são mantidos sob sigilo profissional odontológico (Código de Ética Odontológica) e guardados pelo prazo mínimo exigido pelo Conselho Federal de Odontologia (CFO).</li>
+            <li><strong>Direitos do Titular:</strong> O paciente poderá solicitar acesso, correção ou informações sobre seus dados diretamente pelo canal oficial: <strong>${perfil.email}</strong>.</li>
+          </ul>
+          <p class="pt-4 text-right text-xs">${cidadeBase}, ${hojeExtenso}.</p>
+        `;
+      }
+    }
+
+    function enviarDocWhatsApp() {
+      const pac = document.getElementById('docPaciente').value.trim() || 'Paciente';
+      const tel = document.getElementById('docWhats').value.replace(/\D/g, '');
+      const titulos = {
+        comparecimento: 'Declaração de Comparecimento',
+        atestado: 'Atestado Odontológico',
+        recibo: 'Recibo Odontológico',
+        endodontia: 'Termo de Consentimento (Endodontia)',
+        lgpd: 'Termo de Consentimento LGPD'
+      };
+      const msg = `Olá *${pac}*! Segue o registro do seu documento emitido pelo consultório de *${perfil.nome}* (${perfil.cro}):\n\n📄 *Documento:* ${titulos[docAtual]}\n📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}\n📍 *Consultório:* ${perfil.endereco} - ${perfil.cidade}\n\n_(Em caso de necessidade do arquivo PDF impresso, basta nos solicitar aqui!)_`;
+      const url = tel ? `https://wa.me/55${tel}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    // ================= ANAMNESE =================
+    function salvarAnamnese() {
+      const nome = document.getElementById('anaNome').value.trim();
+      if (!nome) {
+        alert('Informe o nome completo do paciente.');
+        return;
+      }
+      const ficha = {
+        id: Date.now(),
+        data: new Date().toLocaleDateString('pt-BR'),
+        nome,
+        cpf: document.getElementById('anaCpf').value,
+        cel: document.getElementById('anaCel').value,
+        q1: document.getElementById('q1').value,
+        q4: document.getElementById('q4').value,
+        plano: document.getElementById('anaPlano').value
+      };
+      prontuarios.unshift(ficha);
+      localStorage.setItem('odonto_ltg_prontuarios', JSON.stringify(prontuarios));
+      renderizarProntuarios();
+      alert('Prontuário clínico salvo com sucesso!');
+    }
+
+    function renderizarProntuarios() {
+      const box = document.getElementById('listaProntuariosSalvos');
+      if (prontuarios.length === 0) {
+        box.innerHTML = '';
+        return;
+      }
+      box.innerHTML = `<h4 class="font-bold text-stone-700 pt-4 border-t border-stone-200">Prontuários Salvos Recentemente (${prontuarios.length})</h4>` +
+        prontuarios.map(p => `
+          <div class="p-3 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between">
+            <div>
+              <strong class="text-bordo-900">${p.nome}</strong> <span class="text-stone-400">• ${p.data}</span>
+              <p class="text-stone-600 text-[11px]">Alergias: ${p.q4 || 'Nenhuma informada'} | Plano: ${p.plano || '-'}</p>
+            </div>
+            <button onclick="usarFichaEmDoc('${p.nome}', '${p.cpf}', '${p.cel}')" class="px-3 py-1.5 rounded-lg bg-bordo-700 text-white font-bold text-[11px]">
+              Emitir Doc
+            </button>
+          </div>
+        `).join('');
+    }
+
+    function usarFichaEmDoc(nome, cpf, cel) {
+      document.getElementById('docPaciente').value = nome;
+      document.getElementById('docCpf').value = cpf;
+      document.getElementById('docWhats').value = cel;
+      mudarAba('documentos');
+      atualizarPreviewDoc();
+    }
+
+    document.getElementById('formConfig').addEventListener('submit', function(e) {
+      e.preventDefault();
+      perfil = {
+        nome: document.getElementById('cfgNome').value.trim(),
+        cro: document.getElementById('cfgCro').value.trim(),
+        cpf: document.getElementById('cfgCpf').value.trim(),
+        endereco: document.getElementById('cfgEnd').value.trim(),
+        cidade: document.getElementById('cfgCid').value.trim(),
+        telefone: document.getElementById('cfgTel').value.trim(),
+        email: document.getElementById('cfgEmail').value.trim()
+      };
+      localStorage.setItem('odonto_ltg_perfil', JSON.stringify(perfil));
+      aplicarPerfil();
+      alert('Dados do consultório atualizados em todos os documentos!');
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      aplicarPerfil();
+      irParaHoje();
+      inicializarCanvas();
+      renderizarProntuarios();
+    });
+  </script>
+</body>
+</html>
